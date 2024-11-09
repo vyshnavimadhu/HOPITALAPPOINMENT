@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home - Doctor Appoiment System</title>
+
+  <link href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+
+  <link rel="stylesheet" href="assets/css/index.css">
+
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+  <link href="assets/vendor/quill/quill.snow.css" rel="stylesheet">
+  <link href="assets/vendor/quill/quill.bubble.css" rel="stylesheet">
+  <link href="assets/vendor/remixicon/remixicon.css" rel="stylesheet">
+  <link href="assets/vendor/simple-datatables/style.css" rel="stylesheet">
+
+</head>
+<body>
+
+  <header>
+    <nav>
+      <ul>
+        <% if (userActive === false) { %>
+          <li>
+            <a href="/user/login" class="btn-show">SignIn</a>
+          </li>
+        <% } else { %>
+          <li>
+            <a href="/user/dashboard" class="btn-show">Dashboard</a>
+          </li>
+        <% } %>
+        
+        <li>
+          <a href="/user/register" class="btn-show">Create User Account</a>
+        </li>
+
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section class="main">
+      <div class="parent">
+        <h1>Welcome to Doctor Appoiment System</h1>
+        <h5>Patient can booking corresponding Doctor</h5>
+        <br>
+        <h3>Search </h3>
+
+        <form id="searchForm">
+          <div class="form-control">
+            <input type="text" name="place" id="place" placeholder="Place/Location">
+            <select name="department" id="department">
+              <option selected disabled hidden>Medical Specialists</option>
+              <% dept.forEach(col => { %>
+                <option value="<%= col.id %>"><%= col.name %> [<%= col.hospital.name %>] [<%= col.hospital.place %>]</option>
+              <% }) %>
+            </select>
+            <button type="submit">
+              <i class="bi bi-search"></i> 
+              Search
+            </button>
+          </div>
+        </form>
+        
+        <br>
+        
+        <table class="table table-borderless datatable" id="doctorBody">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Doctor Name</th>
+              <th scope="col">Specialists</th>
+              <th scope="col">Hospital Name</th>
+              <th scope="col">Slot No</th>
+              <th scope="col">Location</th>
+              <th scope="col">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Results will be inserted here -->
+          </tbody>
+        </table>
+
+      </div>
+    </section>
+  </main>
+
+  <footer id="footer" class="footer">
+    <div class="copyright">
+      &copy; Copyright <strong><span>Vyshnavi</span></strong>. All Rights Reserved
+    </div>
+  </footer>
+
+  
+  
+  <script src="assets/vendor/apexcharts/apexcharts.min.js"></script>
+  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/vendor/chart.js/chart.umd.js"></script>
+  <script src="assets/vendor/echarts/echarts.min.js"></script>
+  <script src="assets/vendor/quill/quill.min.js"></script>
+  <script src="assets/vendor/simple-datatables/simple-datatables.js"></script>
+  <script src="assets/vendor/tinymce/tinymce.min.js"></script>
+  <script src="assets/vendor/php-email-form/validate.js"></script>
+
+
+  <!-- Template Main JS File -->
+  <script src="assets/js/main.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const tableBody = document.getElementById('doctorBody').getElementsByTagName('tbody')[0]; // Moved inside DOMContentLoaded
+  
+      document.getElementById('searchForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+  
+        const place = document.getElementById('place').value;
+        const department = document.getElementById('department').value;
+  
+        const response = await fetch('/search', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ place, department })
+        });
+  
+        const result = await response.json();
+  
+        if (tableBody) {
+          tableBody.innerHTML = ''; // Clear previous results
+  
+          if (result.doctors.length > 0) {
+            const currentDate = new Date().toISOString().split('T')[0]; // Get current date in YYYY-MM-DD format
+  
+            result.doctors.forEach((doctor, index) => {
+              const slots = doctor.availableSlots; // Array of available slots
+  
+              // Filter slots for current date and slotsno greater than 0
+              const filteredSlots = slots.filter(slot => {
+                const slotDate = new Date(slot.date).toISOString().split('T')[0]; // Format slot date to YYYY-MM-DD
+                return slotDate === currentDate && slot.slotsno > 0;
+              });
+  
+              // Extract only the slotsno from filtered slots
+              const slotsInfo = filteredSlots.map(slot => slot.slotsno).join(', ');
+  
+              const row = `<tr>
+                <td>${index + 1}</td>
+                <td>${doctor.name}</td>
+                <td>${doctor.department.name}</td>
+                <td>${doctor.hospital.name}</td>
+                <td>${slotsInfo || 'No available slots'}</td>
+                <td>${doctor.hospital.place}</td>
+                <% if (userActive === false) { %>
+                  <td>
+                    <button class="btn btn-secondary btn-sm" disabled>Book</button>
+                  </td>
+                <% } else { %>
+                  <td>
+                    <a href="/user/appoinmentBook/${doctor.id}/<%= uId %>" class="btn btn-success btn-md">Book</a>
+                  </td>
+                <% } %>
+              </tr>`;
+              tableBody.innerHTML += row;
+            });
+          } else {
+            tableBody.innerHTML = '<tr><td colspan="7">No doctors found for this search</td></tr>';
+          }
+        } else {
+          console.error('Element with id "doctorTableBody" not found.');
+        }
+      });
+    });
+  </script>
+  
+  
+
+</body>
+</html>

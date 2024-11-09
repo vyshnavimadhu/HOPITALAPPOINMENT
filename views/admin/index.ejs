@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>Dashboard</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="../assets/img/favicon.png" rel="icon">
+  <link href="../assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="../assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+  <link href="../assets/vendor/quill/quill.snow.css" rel="stylesheet">
+  <link href="../assets/vendor/quill/quill.bubble.css" rel="stylesheet">
+  <link href="../assets/vendor/remixicon/remixicon.css" rel="stylesheet">
+  <link href="../assets/vendor/simple-datatables/style.css" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="../assets/css/style.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+  <!-- ======= Header ======= -->
+   <%- include('header.ejs') %>
+  <!-- End Header -->
+
+  <!-- ======= Sidebar ======= -->
+   <%- include('aside.ejs') %>
+  <!-- End Sidebar-->
+
+  <main id="main" class="main">
+    <!-- Dashboard Header -->
+    <div class="text-center mb-5">
+        <h1 class="display-4 text-white bg-dark py-3 rounded">Admin Dashboard</h1>
+        <p class="lead">Manage and oversee hospital operations, doctors, users, and appointments</p>
+    </div>
+
+    <!-- Statistics Section -->
+    <div class="row text-center mb-4">
+        <!-- Total Hospitals -->
+        <div class="col-md-3">
+            <div class="card bg-primary text-white shadow-sm">
+                <div class="card-body mt-4">
+                    <h5>Total Hospitals</h5>
+                    <h2><%= totalHospitals || 'Nill' %></h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Doctors -->
+        <div class="col-md-3">
+            <div class="card bg-success text-white shadow-sm">
+                <div class="card-body mt-4">
+                    <h5>Total Doctors</h5>
+                    <h2><%= totalDoctors || 'Nill' %></h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Users -->
+        <div class="col-md-3">
+            <div class="card bg-warning text-white shadow-sm">
+                <div class="card-body mt-4">
+                    <h5>Total Users</h5>
+                    <h2><%= totalUsers || 'Nill' %></h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Appointments -->
+        <div class="col-md-3">
+            <div class="card bg-info text-white shadow-sm">
+                <div class="card-body mt-4">
+                    <h5>Total Appointments</h5>
+                    <h2><%= totalAppointments || 'Nill' %></h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Details Section -->
+    <div class="row mb-5">
+        <!-- Hospital Details -->
+        <div class="col-md-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4>Hospital Management</h4>
+                </div>
+                <div class="card-body">
+                    <p>Manage all the hospital details, add new hospitals, and monitor their activities.</p>
+                    <a href="/admin/hospitals" class="btn btn-primary btn-block">View Hospitals</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Doctor Details -->
+        <div class="col-md-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-success text-white">
+                    <h4>Doctor Management</h4>
+                </div>
+                <div class="card-body">
+                    <p>View and manage all registered doctors. Add new doctors and assign them to hospitals.</p>
+                    <a href="/admin/doctors" class="btn btn-success btn-block">View Doctors</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Details -->
+        <div class="col-md-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-warning text-white">
+                    <h4>User Management</h4>
+                </div>
+                <div class="card-body">
+                    <p>Oversee registered users. Manage user details, appointments, and access levels.</p>
+                    <a href="/admin/users" class="btn btn-warning btn-block">View Users</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Appointment Details -->
+        <div class="col-md-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-info text-white">
+                    <h4>Appointment Management</h4>
+                </div>
+                <div class="card-body">
+                    <p>Monitor and manage all appointments. Approve, reschedule, or cancel appointments.</p>
+                    <a href="/admin/appointments" class="btn btn-info btn-block">View Appointments</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+
+  <!-- ======= Footer ======= -->
+   <%- include('footer.ejs') %>
+  <!-- End Footer -->
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Vendor JS Files -->
+  <script src="../assets/vendor/apexcharts/apexcharts.min.js"></script>
+  <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="../assets/vendor/chart.js/chart.umd.js"></script>
+  <script src="../assets/vendor/echarts/echarts.min.js"></script>
+  <script src="../assets/vendor/quill/quill.min.js"></script>
+  <script src="../assets/vendor/simple-datatables/simple-datatables.js"></script>
+  <script src="../assets/vendor/tinymce/tinymce.min.js"></script>
+  <script src="../assets/vendor/php-email-form/validate.js"></script>
+
+  <!-- Template Main JS File -->
+  <script src="../assets/js/main.js"></script>
+
+</body>
+
+</html>

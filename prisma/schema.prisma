@@ -1,0 +1,125 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id       Int      @id @default(autoincrement())
+  username String   @unique
+  pwd      String
+  createAt DateTime @default(now())
+}
+
+// Hospital Model
+model Hospital {
+  id           Int           @id @default(autoincrement())
+  name         String
+  place        String
+  email        String        @unique
+  phone        String        @unique
+  password     String
+  departments  Department[] // One Hospital has many Departments
+  doctors      Doctor[] // One Hospital has many Doctors
+  appointments Appointment[] // One Hospital has many Appointments <--- Add this line
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+// Department Model
+model Department {
+  id         Int      @id @default(autoincrement())
+  name       String
+  hospital   Hospital @relation(fields: [hospitalId], references: [id])
+  hospitalId Int
+  doctors    Doctor[] // One Department has many Doctors
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+// Doctor Model
+model Doctor {
+  id         Int             @id @default(autoincrement())
+  name       String
+  email      String          @unique
+  phone      String          @unique
+  password   String
+  experience ExperienceLevel
+
+  hospitalId Int
+  hospital   Hospital @relation(fields: [hospitalId], references: [id])
+
+  departmentId Int
+  department   Department @relation(fields: [departmentId], references: [id])
+
+  availableSlots AvailableSlots[] // One Doctor have different slotno in different date
+  appointments   Appointment[]
+
+  isAvailable Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AvailableSlots {
+  id      Int    @id @default(autoincrement())
+  token   String @default(uuid())
+  slotsno Int
+  date    DateTime @default(now())// Track which date the slots are available for
+
+  doctorId Int
+  doctor   Doctor @relation(fields: [doctorId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Patient (User) Model
+model Patient {
+  id       Int    @id @default(autoincrement())
+  name     String
+  email    String @unique
+  phone    String @unique
+  password String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  appointments Appointment[]
+}
+
+// Appointment Model
+model Appointment {
+  id            Int    @id @default(autoincrement())
+  appointmentNo String @unique @default(uuid())
+
+  hospitalId Int
+  hospital   Hospital @relation(fields: [hospitalId], references: [id])
+
+  doctorId Int
+  doctor   Doctor @relation(fields: [doctorId], references: [id])
+
+  patientId Int
+  patient   Patient @relation(fields: [patientId], references: [id])
+
+  status Status @default(COMPLETED)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Enum for Appointment Status
+enum Status {
+  PENDING
+  COMPLETED
+  CANCELLED
+}
+
+enum ExperienceLevel {
+  JUNIOR
+  SENIOR
+  ASSISTANT
+}
